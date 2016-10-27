@@ -33,7 +33,7 @@ ARCADE.game = (function() {
 
 	function gameLoop() {
 		ctx.clearRect(0, 0, ARCADE.width, ARCADE.height);
-		//enemy.attack(protagonist);
+		enemy.move();
 		draw();
 		timeout = setTimeout(gameLoop, frameLength);
 	}
@@ -195,19 +195,38 @@ ARCADE.protagonist = function () {
 };
 
 ARCADE.enemy = function() {
+	var direction;
 	var position = [20, 20];
+	var speed = 0.05;
 
 	function attack() {
 		var attack = false;
 	}
 
-	function move(newDirection) {
-		var newDirection = false;
+	function move() {
+		var directions = ['left', 'up', 'right', 'down'];
+		var index = Math.floor(Math.random() * 4);
+		direction = directions[index];
+		//console.log(index, direction);
+		switch (direction) {
+		case 'left': 
+			position[0] -= speed;
+			break;
+		case 'up':
+			position[1] -= speed;
+			break;
+		case 'right':
+			position[0] += speed;
+			break;
+		case 'down': 
+			position[1] += speed;
+			break
+		}
 	}
 
 	function draw(ctx) {
 		ctx.save();
-		ctx.fillStyle = '#ff0000';
+		ctx.fillStyle = 'red';
 		var x = ARCADE.blocksize * position[0];
 		var y = ARCADE.blocksize * position[1];
 		ctx.fillRect(x, y, ARCADE.blocksize, ARCADE.blocksize);
