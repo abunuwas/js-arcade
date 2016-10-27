@@ -33,7 +33,12 @@ ARCADE.game = (function() {
 
 	function gameLoop() {
 		ctx.clearRect(0, 0, ARCADE.width, ARCADE.height);
-		enemy.move();
+		if (enemy.distanceFrom(protagonist) < [2, 2]) {
+			enemy.attack(protagonist);
+		}
+		else {
+			enemy.move();
+		}
 		draw();
 		timeout = setTimeout(gameLoop, frameLength);
 	}
@@ -210,6 +215,7 @@ ARCADE.enemy = function() {
 	var speed = 0.2;
 
 	function attack() {
+		console.log('Attacking protagonist!!')
 		var attack = false;
 	}
 
@@ -255,6 +261,16 @@ ARCADE.enemy = function() {
 		}
 	}
 
+	function distanceFrom(target) {
+		var targetPos = target.getPosition();
+		var targetX = Math.abs(targetPos[0]);
+		var targetY = Math.abs(targetPos[1]);
+		var x = Math.abs(position[0]);
+		var y = Math.abs(position[1]);
+		distance = [Math.abs(targetX - x), Math.abs(targetY - y)];
+		return distance;
+	}
+
 	function move() {
 		var protaPosition = ARCADE.game.getProtaPosition();
 		var protaX = protaPosition[0];
@@ -268,7 +284,6 @@ ARCADE.enemy = function() {
 		else {
 			randomPosition()
 		}
-		//console.log(position)
 	}
 
 	function draw(ctx) {
@@ -286,7 +301,9 @@ ARCADE.enemy = function() {
 	return {
 		draw: draw,
 		move: move,
-		checkCollision: checkCollision
+		checkCollision: checkCollision,
+		distanceFrom: distanceFrom,
+		attack: attack
 	};
 
 }
