@@ -94,8 +94,13 @@ ARCADE.game = (function() {
 		$(canvas).click(restart);
 	}
 
+	function getProtaPosition() {
+		return protagonist.getPosition();
+	}
+
 	return {
-		init: init
+		init: init,
+		getProtaPosition: getProtaPosition
 	};
 })();
 
@@ -186,24 +191,29 @@ ARCADE.protagonist = function () {
 		var bullet = new Bullet(bulletDirection, 0.2, 500, bulletPosition);
 	}
 
+	function getPosition() { 
+		return position;
+	}
+
 	return {
 		draw: draw,
 		move: move,
 		checkCollision: checkCollision,
-		shoot: shoot
+		shoot: shoot,
+		getPosition: getPosition
 	};
 };
 
 ARCADE.enemy = function() {
 	var direction;
-	var position = [20, 20];
-	var speed = 0.05;
+	var position = [30, 30];
+	var speed = 0.2;
 
 	function attack() {
 		var attack = false;
 	}
 
-	function move() {
+	function randomPosition() {
 		var directions = ['left', 'up', 'right', 'down'];
 		var index = Math.floor(Math.random() * 4);
 		direction = directions[index];
@@ -221,7 +231,44 @@ ARCADE.enemy = function() {
 		case 'down': 
 			position[1] += speed;
 			break
+		}			
+	}
+
+	function getCloser(protaX, protaY) {
+		var x = position[0];
+		var y = position[1];
+		if (protaX < x && protaY < y) {
+			position[0] -= 1;
+			position[1] -= 1;
 		}
+		else if (protaX > x && protaY < y) {
+			position[0] += 1;
+			position[1] -= 1;
+		}
+		else if (protaX > x && protaY > y) {
+			position[0] += 1;
+			position[1] += 1;
+		}
+		else if (protaX < x && protaY > y) {
+			position[0] -= 0;
+			position[1] += 1;
+		}
+	}
+
+	function move() {
+		var protaPosition = ARCADE.game.getProtaPosition();
+		var protaX = protaPosition[0];
+		var protaY = protaPosition[1];
+		var distX = Math.abs(position[0]) - Math.abs(protaX);
+		var distY = Math.abs(position[1]) - Math.abs(protaY);
+		console.log(distX, distY);
+		if (Math.abs(distX) > 0 && Math.abs(distX) < 20 && Math.abs(distY) > 0 && Math.abs(distY) < 20) {
+			getCloser(protaX, protaY)
+		}
+		else {
+			randomPosition()
+		}
+		//console.log(position)
 	}
 
 	function draw(ctx) {
